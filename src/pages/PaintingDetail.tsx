@@ -43,7 +43,7 @@ export const PaintingDetail = () => {
           .sort((a: any, b: any) => a.order - b.order)
           .map((img: any) => img.url),
         pdfReport: paintingData.painting_reports[0]?.url || '',
-        stripePaymentLink: `https://buy.stripe.com/test_example${paintingData.id}` // Update with real Stripe links
+        stripePaymentLink: `https://buy.stripe.com/8wM6qz9fVeTX5zi3cT` // Update with real Stripe links
       };
 
       setPainting(formattedPainting);

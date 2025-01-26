@@ -38,7 +38,7 @@ export const Gallery = () => {
           .sort((a: any, b: any) => a.order - b.order)
           .map((img: any) => img.url),
         pdfReport: painting.painting_reports[0]?.url || '',
-        stripePaymentLink: `https://buy.stripe.com/test_example${painting.id}` // You'll need to update this with real Stripe links
+        stripePaymentLink: `https://buy.stripe.com/8wM6qz9fVeTX5zi3cT` // You'll need to update this with real Stripe links
       }));
 
       setPaintings(formattedPaintings);
@@ -84,7 +84,7 @@ export const Gallery = () => {
             Featured Collection
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Each piece is carefully selected and restored.
+            Each piece is professionally selected, curated, restored and framed.
           </p>
         </div>
         
