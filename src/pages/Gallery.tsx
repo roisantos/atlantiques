@@ -70,11 +70,10 @@ export const Gallery = () => {
         <div className="relative z-10 container mx-auto px-4 h-full flex flex-col items-center justify-center text-white text-center">
           <div className="flex items-center mb-8">
             <Waves size={64} className="text-cyan-300" />
-            <h1 className="text-6xl font-bold ml-4">Atlantis Gallery</h1>
+            <h1 className="text-6xl font-bold ml-4">Atlantiques</h1>
           </div>
           <p className="text-2xl max-w-2xl mx-auto text-cyan-100">
-            Discover the mystical beauty of the lost city through our exclusive collection of Atlantean art
-          </p>
+          Welcome to Atlantiques.co.uk  by gallerist Carlos Moreno, based in London.    </p>
         </div>
       </div>
 
@@ -85,7 +84,7 @@ export const Gallery = () => {
             Featured Collection
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Each piece tells a story of the legendary underwater civilization
+            Each piece is carefully selected and restored.
           </p>
         </div>
         

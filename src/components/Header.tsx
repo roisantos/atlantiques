@@ -9,7 +9,7 @@ export const Header = () => {
         <nav className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2 text-2xl font-bold">
             <Waves size={32} />
-            <span>Atlantis Gallery</span>
+            <span>Atlantiques.co.uk - Art Gallery by Carlos Moreno</span>
           </Link>
           <div className="text-lg">
             <Link to="/" className="hover:text-cyan-300 transition-colors">
