@@ -1,12 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { ContactForm } from '../components/ContactForm';
-import { paintings } from '../data/paintings';
+import { supabase } from '../lib/supabase';
+import { Painting } from '../types';
 
 export const PaintingDetail = () => {
   const { id } = useParams();
-  const painting = paintings.find(p => p.id === id);
+  const [painting, setPainting] = useState<Painting | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    loadPainting();
+  }, [id]);
+
+  const loadPainting = async () => {
+    if (!id) return;
+
+    try {
+      const { data: paintingData, error: paintingError } = await supabase
+        .from('paintings')
+        .select(`
+          *,
+          painting_images (url, order),
+          painting_reports (url)
+        `)
+        .eq('id', id)
+        .single();
+
+      if (paintingError) throw paintingError;
+
+      const formattedPainting = {
+        id: paintingData.id,
+        title: paintingData.title,
+        artist: paintingData.artist,
+        description: paintingData.description,
+        price: paintingData.price,
+        dimensions: paintingData.dimensions,
+        medium: paintingData.medium,
+        year: paintingData.year,
+        imageUrls: paintingData.painting_images
+          .sort((a: any, b: any) => a.order - b.order)
+          .map((img: any) => img.url),
+        pdfReport: paintingData.painting_reports[0]?.url || '',
+        stripePaymentLink: `https://buy.stripe.com/test_example${paintingData.id}` // Update with real Stripe links
+      };
+
+      setPainting(formattedPainting);
+    } catch (error) {
+      console.error('Error loading painting:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   if (!painting) {
     return <Navigate to="/" replace />;
@@ -78,19 +128,20 @@ export const PaintingDetail = () => {
                   Purchase Now
                 </a>
 
-                {/* PDF Viewer Section */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Artwork Report
-                  </h3>
-                  <div className="aspect-[4/3] w-full">
-                    <iframe
-                      src={painting.pdfReport}
-                      title={`${painting.title} Report`}
-                      className="w-full h-full border-0 rounded"
-                    />
+                {painting.pdfReport && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      Artwork Report
+                    </h3>
+                    <div className="aspect-[4/3] w-full">
+                      <iframe
+                        src={painting.pdfReport}
+                        title={`${painting.title} Report`}
+                        className="w-full h-full border-0 rounded"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">

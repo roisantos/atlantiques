@@ -1,9 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Waves } from 'lucide-react';
 import { PaintingCard } from '../components/PaintingCard';
-import { paintings } from '../data/paintings';
+import { supabase } from '../lib/supabase';
+import { Painting } from '../types';
 
 export const Gallery = () => {
+  const [paintings, setPaintings] = useState<Painting[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadPaintings();
+  }, []);
+
+  const loadPaintings = async () => {
+    try {
+      const { data: paintingsData, error: paintingsError } = await supabase
+        .from('paintings')
+        .select(`
+          *,
+          painting_images (url, order),
+          painting_reports (url)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (paintingsError) throw paintingsError;
+
+      const formattedPaintings = paintingsData.map(painting => ({
+        id: painting.id,
+        title: painting.title,
+        artist: painting.artist,
+        description: painting.description,
+        price: painting.price,
+        dimensions: painting.dimensions,
+        medium: painting.medium,
+        year: painting.year,
+        imageUrls: painting.painting_images
+          .sort((a: any, b: any) => a.order - b.order)
+          .map((img: any) => img.url),
+        pdfReport: painting.painting_reports[0]?.url || '',
+        stripePaymentLink: `https://buy.stripe.com/test_example${painting.id}` // You'll need to update this with real Stripe links
+      }));
+
+      setPaintings(formattedPaintings);
+    } catch (error) {
+      console.error('Error loading paintings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-cyan-50 to-blue-50">
       {/* Hero Section */}
@@ -44,11 +89,15 @@ export const Gallery = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {paintings.map((painting) => (
-            <PaintingCard key={painting.id} painting={painting} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-12">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {paintings.map((painting) => (
+              <PaintingCard key={painting.id} painting={painting} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
